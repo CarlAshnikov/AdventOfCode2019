@@ -50,9 +50,6 @@ while current_node.pred is not None:
     san_path.append(current_node.pred.name)
     current_node = current_node.pred
 
-print(you_path)
-print(san_path)
-
 for name in you_path:
     for name2 in san_path:
         if name == name2:
