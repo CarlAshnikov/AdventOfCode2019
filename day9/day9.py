@@ -2,14 +2,6 @@ import numpy as np
 import sys
 import itertools
 
-read_data = np.loadtxt('day9/input.txt', delimiter=',', dtype=np.int64)
-
-stop = False
-
-print(read_data)
-
-outputs = 0
-
 class computer():
     def __init__(self, data):
         self.data = data
@@ -26,19 +18,19 @@ class computer():
         return self.get_value(a_instruction[-4], self.data[self.pointer + 2])
 
     def check_index(self, index):
-        diff = index - len(self.data) + 1  
+        diff = index - len(self.data) + 1
         if diff > 0:
             zeros = np.zeros(diff + 2, dtype=np.int64)
             self.data = np.append(self.data, zeros, axis=0)
-            
+
     def get_value(self, value_type, value):
         if value_type == 0:
-            ind = value           
+            ind = value
         elif value_type == 1:
             return value
         else:
             ind = value + self.relative_base
-        self.check_index(ind)      
+        self.check_index(ind)
         return self.data[ind]
 
     def write_value(self, value_type, index, data):
@@ -49,8 +41,9 @@ class computer():
         else:
             print("ERROR")
             exit()
-        self.check_index(ind)    
+        self.check_index(ind)
         self.data[ind] = int(data)
+
     def get_input(self):
         return self.last_output_value
 
@@ -62,7 +55,7 @@ class computer():
             if instruction[-1] == 1:
                 val1 = self.get_first_value(instruction)
                 val2 = self.get_second_value(instruction)
-                res = val1 + val2                    
+                res = val1 + val2
                 self.write_value(instruction[-5], self.data[self.pointer + 3], res)
                 self.pointer += 4
             elif instruction[-1] == 2:
@@ -75,8 +68,8 @@ class computer():
                 self.write_value(instruction[-3], self.data[self.pointer + 1], self.get_input())
                 self.pointer += 2
             elif instruction[-1] == 4:
-                #print("output: {}".format(get_first_value(instruction)))
-                self.last_output_value = self.get_first_value(instruction)                
+                # print("output: {}".format(get_first_value(instruction)))
+                self.last_output_value = self.get_first_value(instruction)
                 self.pointer += 2
                 return (self.last_output_value, False)
             elif instruction[-1] == 5:
@@ -102,7 +95,7 @@ class computer():
                     self.write_value(instruction[-5], self.data[self.pointer + 3], 0)
                 self.pointer += 4
             elif instruction[-1] == 9 and instruction[-2] == 9:
-                #print("Finished! {}".format(i))
+                # print("Finished! {}".format(i))
                 self.stopped = True
                 return (self.last_output_value, True)
             elif instruction[-1] == 9:
@@ -112,8 +105,16 @@ class computer():
                 print("ERROR")
                 sys.exit()
 
-comp = computer(read_data.copy())
-stop = False
-while not stop:
-    res, stop = comp.process_until_output(2)   
-    print(res)
+def main():
+    read_data = np.loadtxt('input.txt', delimiter=',', dtype=np.int64)
+
+    stop = False
+
+    print(read_data)
+
+    outputs = 0
+    comp = computer(read_data.copy())
+    stop = False
+    while not stop:
+        res, stop = comp.process_until_output(2)
+        print(res)
