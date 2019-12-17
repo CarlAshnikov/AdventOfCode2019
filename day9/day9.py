@@ -47,7 +47,14 @@ class computer():
     def get_input(self):
         return self.last_output_value
 
-    def process_until_output(self, input_value):
+    def next_is_input(self):
+        instruction = [int(x) for x in "{:05d}".format(self.data[self.pointer])]
+        return instruction[-1] == 3
+
+    def process_input(self, input_value):
+        self.process_until_output(0, True)
+
+    def process_until_output(self, input_value, stop_after_input=False):
         self.last_output_value = input_value
         while True:
             instruction = [int(x) for x in "{:05d}".format(self.data[self.pointer])]
@@ -67,11 +74,12 @@ class computer():
             elif instruction[-1] == 3:
                 self.write_value(instruction[-3], self.data[self.pointer + 1], self.get_input())
                 self.pointer += 2
+                if stop_after_input:
+                    return
             elif instruction[-1] == 4:
-                # print("output: {}".format(get_first_value(instruction)))
                 self.last_output_value = self.get_first_value(instruction)
                 self.pointer += 2
-                return (self.last_output_value, False)
+                return self.last_output_value, False
             elif instruction[-1] == 5:
                 if self.get_first_value(instruction) != 0:
                     self.pointer = self.get_second_value(instruction)
@@ -95,15 +103,15 @@ class computer():
                     self.write_value(instruction[-5], self.data[self.pointer + 3], 0)
                 self.pointer += 4
             elif instruction[-1] == 9 and instruction[-2] == 9:
-                # print("Finished! {}".format(i))
                 self.stopped = True
-                return (self.last_output_value, True)
+                return self.last_output_value, True
             elif instruction[-1] == 9:
                 self.relative_base += self.get_first_value(instruction)
                 self.pointer += 2
             else:
                 print("ERROR")
                 sys.exit()
+
 
 def main():
     read_data = np.loadtxt('input.txt', delimiter=',', dtype=np.int64)
