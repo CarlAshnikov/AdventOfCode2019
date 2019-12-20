@@ -54,7 +54,7 @@ class computer():
     def process_input(self, input_value):
         self.process_until_output(0, True)
 
-    def process_until_output(self, input_value, stop_after_input=False):
+    def process_until_output(self, input_value, stop_after_input=False, stop_before_input=False):
         self.last_output_value = input_value
         while True:
             instruction = [int(x) for x in "{:05d}".format(self.data[self.pointer])]
@@ -72,10 +72,12 @@ class computer():
                 self.write_value(instruction[-5], self.data[self.pointer + 3], res)
                 self.pointer += 4
             elif instruction[-1] == 3:
+                if stop_before_input:
+                    return 0, True
                 self.write_value(instruction[-3], self.data[self.pointer + 1], self.get_input())
                 self.pointer += 2
                 if stop_after_input:
-                    return
+                    return 0, False
             elif instruction[-1] == 4:
                 self.last_output_value = self.get_first_value(instruction)
                 self.pointer += 2

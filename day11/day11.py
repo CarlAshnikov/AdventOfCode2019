@@ -20,32 +20,47 @@ class Robot:
         self.miny = 0
         self.maxy = 0
 
+    def do_move(self, x, y, direction):
+        if direction == Direction.UP:
+            y += 1
+        elif direction == Direction.DOWN:
+            y -= 1
+        elif direction == Direction.LEFT:
+            x -= 1
+        elif direction == Direction.RIGHT:
+            x += 1
+
+        return x, y
+
     def move(self):
-        if self.direction == Direction.UP:
-            self.y += 1
-        elif self.direction == Direction.DOWN:
-            self.y -= 1
-        elif self.direction == Direction.LEFT:
-            self.x -= 1
-        elif self.direction == Direction.RIGHT:
-            self.x += 1
+        self.x, self.y = self.do_move(self.x, self.y, self.direction)
 
         self.minx = np.minimum(self.x, self.minx)
         self.maxx = np.maximum(self.x, self.maxx)
         self.miny = np.minimum(self.y, self.miny)
         self.maxy = np.maximum(self.y, self.maxy)
 
-    def turn_right(self):
-        if self.direction == Direction.LEFT:
-            self.direction = Direction.UP
+    @staticmethod
+    def get_right_turn(direction):
+        if direction == Direction.LEFT:
+            direction = Direction.UP
         else:
-            self.direction = Direction(self.direction + 1)
+            direction = Direction(direction + 1)
+        return direction
+
+    def turn_right(self):
+        self.direction = self.get_right_turn(self.direction)
+
+    @staticmethod
+    def get_left_turn(direction):
+        if direction == Direction.UP:
+            direction = Direction.LEFT
+        else:
+            direction = Direction(direction - 1)
+        return direction
 
     def turn_left(self):
-        if self.direction == Direction.UP:
-            self.direction = Direction.LEFT
-        else:
-            self.direction = Direction(self.direction - 1)
+        self.direction = self.get_left_turn(self.direction)
 
     def get_position(self):
         return self.x, self.y
@@ -90,7 +105,7 @@ def main():
     for pan in panels:
         print('{} -> {}'.format(pan, panels[pan]))
     print(len(panels))
-    for y in reversed(range(rob.miny-2, rob.maxy+2)):
+    for y in reversed(range(rob.miny - 2, rob.maxy + 2)):
         text = ''
         for x in range(rob.minx, rob.maxx):
             coord = (x, y)
@@ -102,6 +117,7 @@ def main():
             else:
                 text += '.'
         print(text)
+
 
 if __name__ == '__main__':
     main()
